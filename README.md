@@ -10,7 +10,3 @@ This Streamlit application uses the Deck of Cards API (https://deckofcardsapi.co
 - Visualize card distributions with interactive charts
 - Analyze card statistics
 
-## Phase 1: Deck of Cards API Integration
-- Phase 1a: Shuffle and create decks
-- Phase 1b: Draw cards from decks
-- Phase 2: Data analysis and visualization of card distributions
