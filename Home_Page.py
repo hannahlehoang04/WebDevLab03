@@ -13,7 +13,7 @@ st.title("🌤️ Web Development Lab03")
 # Assignment Data
 st.header("CS 1301")
 st.subheader("Team 75, Web Development - Section A")
-st.subheader("Hannah Hoang, Mason Bird") 
+st.subheader("Hannah LeHoang, Mason Bird") 
 
 # Introduction
 st.write("""
