@@ -10,6 +10,11 @@ st.set_page_config(page_title="Card Explorer", page_icon="🎴", layout="wide")
 st.title("🎴 Card Explorer")
 st.write("Shuffle decks, draw cards, and analyze card distributions!")
 
+# Add decorative image
+st.image("https://images.unsplash.com/photo-1571168345682-71943f665105?w=800", 
+         caption="Deck of Playing Cards", 
+         use_container_width=True)
+
 # Initialize session state
 if 'deck_id' not in st.session_state:
     st.session_state.deck_id = None
