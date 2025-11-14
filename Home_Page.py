@@ -12,8 +12,8 @@ st.title("🌤️ Web Development Lab03")
 
 # Assignment Data
 st.header("CS 1301")
-st.subheader("Team 01, Web Development - Section A")
-st.subheader("Hannah Hoang, Partner Name")  # ← Replace with actual names
+st.subheader("Team 75, Web Development - Section A")
+st.subheader("Hannah Hoang, Mason Bird") 
 
 # Introduction
 st.write("""
