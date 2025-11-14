@@ -1,118 +1,108 @@
 import streamlit as st
 import requests
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 from collections import Counter
 
-st.set_page_config(page_title="Card Explorer", page_icon="🎴", layout="wide")
+st.title("Card Explorer")
 
-st.title("🎴 Card Explorer")
-st.write("Shuffle decks, draw cards, and analyze card distributions!")
+# Set up session values
+if "deck_id" not in st.session_state:
+    st.session_state.deck_id = ""
+if "drawn" not in st.session_state:
+    st.session_state.drawn = []
 
-# Add decorative image
-st.image("https://images.unsplash.com/photo-1571168345682-71943f665105?w=800", 
-         caption="Deck of Playing Cards", 
-         use_container_width=True)
+st.write("Use this app to create a deck, draw cards, and see some simple stats.")
 
-# Initialize session state
-if 'deck_id' not in st.session_state:
-    st.session_state.deck_id = None
-if 'drawn_cards' not in st.session_state:
-    st.session_state.drawn_cards = []
+#CREATE DECK 
+st.header("Create / Shuffle Deck")
 
-# Sidebar
-with st.sidebar:
-    st.header("🎲 Deck Controls")
-    num_decks = st.slider("Number of Decks", 1, 6, 1)
-    
-    if st.button("🔀 Create & Shuffle New Deck"):
-        try:
-            response = requests.get(f"https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count={num_decks}")
-            data = response.json()
-            if data['success']:
-                st.session_state.deck_id = data['deck_id']
-                st.session_state.drawn_cards = []
-                st.success(f"✅ Deck created! ID: {data['deck_id'][:8]}...")
-                st.info(f"Cards remaining: {data['remaining']}")
-        except Exception as e:
-            st.error(f"Error: {e}")
-    
-    st.divider()
-    
-    if st.session_state.deck_id:
-        st.write(f"**Current Deck:** {st.session_state.deck_id[:8]}...")
+num_decks = st.slider("How many decks?", 1, 6, 1)
 
-# Main content
-col1, col2 = st.columns(2)
-with col1:
-    num_cards = st.number_input("Cards to draw", 1, 52, 5)
-with col2:
-    view_mode = st.selectbox("View Mode", ["Grid", "List", "Stats"])
-
-if st.button("🎴 Draw Cards", type="primary"):
-    if not st.session_state.deck_id:
-        st.warning("⚠️ Create a deck first!")
+if st.button("Create New Deck"):
+    url = f"https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count={num_decks}"
+    r = requests.get(url).json()
+    if r["success"]:
+        st.session_state.deck_id = r["deck_id"]
+        st.session_state.drawn = []
+        st.success("Deck created!")
     else:
-        try:
-            url = f"https://deckofcardsapi.com/api/deck/{st.session_state.deck_id}/draw/?count={num_cards}"
-            response = requests.get(url)
-            data = response.json()
-            
-            if data['success']:
-                cards = data['cards']
-                st.session_state.drawn_cards.extend(cards)
-                st.success(f"✅ Drew {len(cards)} cards! Remaining: {data['remaining']}")
-                
-                if view_mode == "Grid":
-                    st.subheader("🎴 Drawn Cards")
-                    cols = st.columns(5)
-                    for i, card in enumerate(cards):
-                        with cols[i % 5]:
-                            st.image(card['image'], use_container_width=True)
-                            st.caption(f"{card['value']} of {card['suit']}")
-                
-                elif view_mode == "List":
-                    st.subheader("📋 Card List")
-                    df = pd.DataFrame([{
-                        'Card': f"{c['value']} of {c['suit']}",
-                        'Value': c['value'],
-                        'Suit': c['suit']
-                    } for c in cards])
-                    st.dataframe(df, use_container_width=True)
-                
-                else:
-                    st.subheader("📊 Statistics")
-                    suits = [c['suit'] for c in cards]
-                    suit_counts = Counter(suits)
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        fig = px.pie(values=list(suit_counts.values()),
-                                   names=list(suit_counts.keys()),
-                                   title="Suit Distribution")
-                        st.plotly_chart(fig, use_container_width=True)
-                    
-                    with col2:
-                        values = [c['value'] for c in cards]
-                        value_counts = Counter(values)
-                        fig = px.bar(x=list(value_counts.keys()),
-                                   y=list(value_counts.values()),
-                                   title="Value Distribution")
-                        st.plotly_chart(fig, use_container_width=True)
-        except Exception as e:
-            st.error(f"Error: {e}")
+        st.error("Could not create deck.")
 
-# History
-if st.session_state.drawn_cards:
-    st.divider()
-    st.subheader(f"🎯 Total Drawn: {len(st.session_state.drawn_cards)}")
-    with st.expander("View All Cards"):
-        df = pd.DataFrame([{
-            'Card': f"{c['value']} of {c['suit']}",
-            'Suit': c['suit'],
-            'Value': c['value']
-        } for c in st.session_state.drawn_cards])
-        st.dataframe(df)
-        csv = df.to_csv(index=False)
-        st.download_button("💾 Download CSV", csv, "cards.csv", "text/csv")
+if st.session_state.deck_id != "":
+    st.write("Current Deck ID:", st.session_state.deck_id)
+
+st.write("---")
+
+#DRAW CARDS
+st.header("Draw Cards")
+
+count = st.number_input("How many cards to draw?", 1, 52, 5)
+
+view_type = st.selectbox("How do you want to view them?",
+                         ["Grid", "List", "Stats"])
+
+if st.button("Draw"):
+    if st.session_state.deck_id == "":
+        st.warning("Create a deck first.")
+    else:
+        url = f"https://deckofcardsapi.com/api/deck/{st.session_state.deck_id}/draw/?count={count}"
+        r = requests.get(url).json()
+
+        if r["success"]:
+            cards = r["cards"]
+            st.session_state.drawn.extend(cards)
+            st.success("Cards drawn!")
+
+            #GRID VIEW
+            if view_type == "Grid":
+                st.subheader("Cards")
+                cols = st.columns(5)
+                for i, c in enumerate(cards):
+                    with cols[i % 5]:
+                        st.image(c["image"])
+                        st.write(c["value"], "of", c["suit"])
+
+            #LIST VIEW
+            elif view_type == "List":
+                st.subheader("Card List")
+                data = []
+                for c in cards:
+                    data.append({
+                        "Card": c["value"] + " of " + c["suit"],
+                        "Value": c["value"],
+                        "Suit": c["suit"]
+                    })
+                st.dataframe(pd.DataFrame(data))
+
+            #SIMPLE STATS VIEW
+            else:
+                st.subheader("Stats")
+
+                suits = [c["suit"] for c in cards]
+                values = [c["value"] for c in cards]
+
+                st.write("Suit Counts:", dict(Counter(suits)))
+                st.write("Value Counts:", dict(Counter(values)))
+
+        else:
+            st.error("Could not draw cards.")
+
+st.write("---")
+
+#HISTORY
+if len(st.session_state.drawn) > 0:
+    st.header("All Cards Drawn So Far")
+
+    all_data = []
+    for c in st.session_state.drawn:
+        all_data.append({
+            "Card": c["value"] + " of " + c["suit"],
+            "Suit": c["suit"],
+            "Value": c["value"]
+        })
+
+    df = pd.DataFrame(all_data)
+    st.dataframe(df)
+
+    csv = df.to_csv(index=False)
+    st.download_button("Download CSV", csv, "cards.csv")
