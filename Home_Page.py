@@ -12,8 +12,8 @@ st.title("🎴 Deck of Cards - Web Development Lab03")
 
 # Assignment Data
 st.header("CS 1301")
-st.subheader("Team 01, Web Development - Section A")
-st.subheader("Hannah Hoang, Partner Name")  # Replace with your partner's name
+st.subheader("Team 75, Web Development Lab03 - Section A")
+st.subheader("Hannah LeHoang, Mason Bird")  # Replace with your partner's name
 
 # Introduction
 st.write("""
@@ -22,10 +22,10 @@ features, AI-powered game strategies, and a chatbot assistant.
 
 🎲 **Navigate through these pages:**
 
-1. **🎴 Card Explorer**: Shuffle decks, draw cards, and visualize card distributions with interactive charts.
-2. **🤖 AI Card Strategies**: Use Google Gemini AI to generate game strategies, card combinations, and winning tips.
-3. **💬 Card Game Chatbot**: Chat with an AI assistant about card games, rules, and strategies.
-4. **📖 Help & About**: Documentation and API information.
+1. 🎴 Card Explorer: Shuffle decks, draw cards, and visualize card distributions with interactive charts.
+2. 🤖 AI Card Strategies: Use Google Gemini AI to generate game strategies, card combinations, and winning tips.
+3. 💬 Card Game Chatbot: Chat with an AI assistant about card games, rules, and strategies.
+4. 📖 Help & About: Documentation and API information.
 
 """)
 
@@ -54,10 +54,3 @@ This app uses the **Deck of Cards API** to provide an interactive experience wit
 You can shuffle decks, draw cards, analyze card distributions, and get AI-powered insights about 
 various card games like Poker, Blackjack, and more!
 
-**API Features:**
-- No API key required! ✨
-- Real card images (PNG & SVG)
-- Full 52-card deck support
-- Shuffle, draw, and pile management
-- Perfect for game development
-""")
