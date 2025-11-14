@@ -2,13 +2,13 @@ import streamlit as st
 
 # Configure page
 st.set_page_config(
-    page_title="Sakura Card Captor Lab 03",
-    page_icon="🌸",
+    page_title="Deck of Cards Lab 03",
+    page_icon="🎴",
     layout="wide"
 )
 
-# Title with anime theme
-st.title("🌸 Sakura Card Captor - Web Development Lab03")
+# Title
+st.title("🎴 Deck of Cards - Web Development Lab03")
 
 # Assignment Data
 st.header("CS 1301")
@@ -17,15 +17,15 @@ st.subheader("Hannah Hoang, Partner Name")  # Replace with your partner's name
 
 # Introduction
 st.write("""
-Welcome to our Sakura Card Captor Streamlit app! Navigate through the magical pages using the sidebar. 
-Explore the mystical Clow Cards and Sakura Cards with AI-powered insights!
+Welcome to our Deck of Cards Streamlit app! Explore the world of playing cards with interactive 
+features, AI-powered game strategies, and a chatbot assistant.
 
-✨ **The following magical pages await you:**
+🎲 **Navigate through these pages:**
 
-1. **🎴 Card Explorer**: Browse and visualize all Clow and Sakura Cards with interactive filters and beautiful card displays.
-2. **🤖 AI Card Insights**: Use Google Gemini AI to generate card descriptions, analyze card powers, and create magical stories.
-3. **💬 Card Master Chatbot**: Chat with an AI assistant that knows everything about Sakura Card Captor cards.
-4. **📖 Help & About**: Documentation on how to use the app and project details.
+1. **🎴 Card Explorer**: Shuffle decks, draw cards, and visualize card distributions with interactive charts.
+2. **🤖 AI Card Strategies**: Use Google Gemini AI to generate game strategies, card combinations, and winning tips.
+3. **💬 Card Game Chatbot**: Chat with an AI assistant about card games, rules, and strategies.
+4. **📖 Help & About**: Documentation and API information.
 
 """)
 
@@ -36,27 +36,28 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric("Total Pages", "4")
 with col2:
-    st.metric("Total Cards", "60")
+    st.metric("Cards in Deck", "52")
 with col3:
-    st.metric("API", "Sakura Card Captor")
+    st.metric("API", "Deck of Cards")
 with col4:
     st.metric("AI Model", "Gemini Pro")
 
-# Add anime-themed description
-st.image("https://raw.githubusercontent.com/JessVel/sakura-card-captor-api/main/assets/sakura.jpg", 
-         caption="Cardcaptor Sakura - Catch them all!", use_container_width=True)
+# Add card image
+st.image("https://deckofcardsapi.com/static/img/back.png", 
+         caption="Deck of Cards API", width=200)
 
-st.info("👈 Use the sidebar to navigate between magical pages!")
+st.info("👈 Use the sidebar to navigate between pages!")
 
 st.markdown("""
-### 🌟 About Cardcaptor Sakura
-Cardcaptor Sakura is a beloved Japanese manga and anime series. The story follows Sakura Kinomoto, 
-a young girl who discovers magical Clow Cards and must capture them all to prevent disaster. 
-This app lets you explore all the magical cards from the series!
+### 🎲 About This Project
+This app uses the **Deck of Cards API** to provide an interactive experience with playing cards.
+You can shuffle decks, draw cards, analyze card distributions, and get AI-powered insights about 
+various card games like Poker, Blackjack, and more!
 
-**API Information:**
+**API Features:**
 - No API key required! ✨
-- 60 magical cards with rich data
-- Images for both Clow and Sakura card versions
-- Data in English, Spanish, and Japanese
+- Real card images (PNG & SVG)
+- Full 52-card deck support
+- Shuffle, draw, and pile management
+- Perfect for game development
 """)
