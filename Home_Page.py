@@ -10,23 +10,21 @@ st.set_page_config(
 # Title
 st.title("♟ Chess - Web Development Lab03")
 
-# Course info
+# Assignment Data 
+# TODO: Fill out your team number, section, and team members
+
 st.header("CS 1301")
-
-# Team info
 st.subheader("Team 01, Web Development")
-
-# Student names
 st.subheader("Hannah Lehoang, Mason Bird")  # Replace with your partner's name
 
 # Introduction
 st.write("""
 Welcome to our Streamlit Web Development Lab03 app! You can navigate between the pages using the sidebar to the left. The following pages are:
 
-1. **Card Explorer**: Shuffle decks, draw cards, and visualize card distributions with interactive charts.
-2. **Card Strategies**: Use Google Gemini AI to generate game strategies, card combinations, and winning tips.
-3. **Card Game Chatbot**: Chat with an AI assistant about card games, rules, and strategies.
-4. **Help & About**: Documentation and API information.
+1. Card Explorer: Shuffle decks, draw cards, and visualize card distributions with interactive charts.
+2. Card Strategies: Use Google Gemini AI to generate game strategies, card combinations, and winning tips.
+3. Card Game Chatbot: Chat with an AI assistant about card games, rules, and strategies.
+4. Help & About: Documentation and API information.
 
 """)
 
