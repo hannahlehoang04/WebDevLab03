@@ -26,6 +26,6 @@ Welcome to our Streamlit Web Development Lab03 app! You can navigate between the
 """)
 
 # Add a card-themed image
-st.image("C:\Users\hanna\Downloads\WebDevelopmentLab03\WebDevelopmentLab03\Images\43875b26-bc3a-4a10-90e6-148b0c0e6394.bdb7653a6e688db68c38e97b0b7346f6.webp", 
+st.image("https://images.unsplash.com/photo-1596445935973-4fa2ba5c6468?w=800",
          caption="Playing Cards and Strategy", 
          width=700)
