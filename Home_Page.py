@@ -53,4 +53,5 @@ st.markdown("""
 This app uses the **Deck of Cards API** to provide an interactive experience with playing cards.
 You can shuffle decks, draw cards, analyze card distributions, and get AI-powered insights about 
 various card games like Poker, Blackjack, and more!
+""")
 
