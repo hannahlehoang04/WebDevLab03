@@ -13,8 +13,8 @@ st.title("🎴 Card - Web Development Lab03")
 # Assignment Data 
 # TODO: Fill out your team number, section, and team members
 st.header("CS 1301")
-st.subheader("Team 01, Web Development")
-st.subheader("Hannah Lehoang, Mason Bird") # Replace with your partner's name
+st.subheader("Team 75, Web Development Lab03 ")
+st.subheader("Hannah Lehoang, Mason Bird")
 
 # Introduction
 st.write("""
@@ -26,6 +26,6 @@ Welcome to our Streamlit Web Development Lab03 app! You can navigate between the
 """)
 
 # Add a card-themed image
-st.image("https://images.unsplash.com/photo-1596445935973-4fa2ba5c6468?w=800", 
+st.image("C:\Users\hanna\Downloads\WebDevelopmentLab03\WebDevelopmentLab03\Images\43875b26-bc3a-4a10-90e6-148b0c0e6394.bdb7653a6e688db68c38e97b0b7346f6.webp", 
          caption="Playing Cards and Strategy", 
          width=700)
