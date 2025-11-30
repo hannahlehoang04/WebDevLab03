@@ -1,256 +1,201 @@
 import streamlit as st
 import requests
 import google.generativeai as genai
-import time
 
-# Page config
+# Set the page info
 st.set_page_config(page_title="Card Game Chatbot", page_icon="🤖", layout="wide")
 
-# Initialize session state for chat history
-if 'chat_history' not in st.session_state:
+# Make sure important variables exist
+if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-if 'deck_id' not in st.session_state:
+if "deck_id" not in st.session_state:
     st.session_state.deck_id = None
 
-if 'current_cards' not in st.session_state:
+if "current_cards" not in st.session_state:
     st.session_state.current_cards = []
 
-# Title
+# Main title
 st.title("🤖 Card Game Expert Chatbot")
-st.markdown("""
-Ask me anything about card games! I'm powered by AI and have access to live card data.
-I remember our conversation and can provide personalized advice.
-""")
+st.write("Ask me anything about card games! I can also see the cards you draw.")
 
-# Sidebar for configuration
+# -----------------------------
+# SIDEBAR SECTION
+# -----------------------------
 with st.sidebar:
-    st.header("⚙️ Configuration")
-    
-    # API Key input
-    api_key = st.text_input(
-        "🔑 Gemini API Key",
-        type="password",
-        help="Get your free API key from https://aistudio.google.com/apikey"
-    )
-    
+    st.header("Settings")
+
+    # Get Gemini API key from user
+    api_key = st.text_input("Gemini API Key", type="password")
+
     if api_key:
         try:
             genai.configure(api_key=api_key)
-            st.success("✅ API Key configured!")
-        except Exception as e:
-            st.error(f"❌ Invalid API key: {e}")
-    else:
-        st.info("👆 Enter your Gemini API key to start chatting")
-    
-    st.divider()
-    
-    # Card context controls
-    st.subheader("🎴 Live Card Context")
-    st.markdown("Draw cards to give the chatbot context about your current hand!")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        num_cards = st.number_input(
-            "Cards to draw",
-            min_value=1,
-            max_value=10,
-            value=1
-        )
-    
-    with col2:
-        st.write("")  # Spacer
-        st.write("")  # Spacer
-        if st.button("🎲 Draw Cards", use_container_width=True):
-            try:
-                # Create or shuffle deck
-                if not st.session_state.deck_id:
-                    response = requests.get("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
-                    st.session_state.deck_id = response.json()['deck_id']
-                
-                # Draw cards
-                draw_response = requests.get(
-                    f"https://deckofcardsapi.com/api/deck/{st.session_state.deck_id}/draw/?count={num_cards}"
-                )
-                draw_data = draw_response.json()
-                
-                if draw_data['success'] and draw_data['cards']:
-                    st.session_state.current_cards = draw_data['cards']
-                    st.success(f"✅ Drew {len(draw_data['cards'])} card(s)!")
-                else:
-                    # Deck empty, create new one
-                    response = requests.get("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
-                    st.session_state.deck_id = response.json()['deck_id']
-                    st.warning("♻️ Deck was empty, created a new one!")
-            except Exception as e:
-                st.error(f"❌ Error: {e}")
-    
-    if st.button("🗑️ Clear Cards", use_container_width=True):
-        st.session_state.current_cards = []
-        st.success("✅ Cards cleared!")
-    
-    # Display current cards
-    if st.session_state.current_cards:
-        st.markdown("**Current Cards:**")
-        for card in st.session_state.current_cards:
-            st.image(card['image'], width=80)
-            st.caption(f"{card['value']} of {card['suit']}")
-    
-    st.divider()
-    
-    # Clear chat button
-    if st.button("🚮 Clear Chat History", use_container_width=True):
-        st.session_state.chat_history = []
-        st.success("✅ Chat history cleared!")
-    
-    # Display message count
-    st.caption(f"💬 Messages: {len(st.session_state.chat_history)}")
+            st.success("API Key set!")
+        except:
+            st.error("API Key is invalid.")
 
-st.divider()
+    st.write("---")
 
-# Display chat history
-st.subheader("💬 Conversation")
+    # Draw cards
+    st.subheader("Draw Cards")
 
-if st.session_state.chat_history:
-    for message in st.session_state.chat_history:
-        if message['role'] == 'user':
-            with st.chat_message("user", avatar="👤"):
-                st.markdown(message['content'])
-        else:
-            with st.chat_message("assistant", avatar="🤖"):
-                st.markdown(message['content'])
-else:
-    st.info("👋 Start a conversation! Ask me anything about card games.")
+    num_cards = st.number_input(
+        "Number of cards:",
+        min_value=1,
+        max_value=10,
+        value=1
+    )
 
-st.divider()
-
-# Chat input
-st.subheader("✍️ Your Message")
-
-user_input = st.text_area(
-    "Type your message here:",
-    placeholder="e.g., What's the probability of getting a royal flush in poker?",
-    height=100,
-    key="user_input_field"
-)
-
-if st.button("📤 Send Message", type="primary", use_container_width=True):
-    if not api_key:
-        st.error("⚠️ Please enter your Gemini API key in the sidebar first!")
-    elif not user_input or user_input.strip() == "":
-        st.warning("⚠️ Please enter a message!")
-    else:
+    if st.button("Draw Cards"):
         try:
-            # Add user message to history
-            st.session_state.chat_history.append({
-                'role': 'user',
-                'content': user_input
-            })
-            
-            # Build context for AI
-            context_parts = []
-            
-            # Add system prompt
-            context_parts.append(
-                "You are a helpful card game expert chatbot. You provide accurate, friendly advice about card games, "
-                "strategies, rules, and probabilities. Keep responses concise but informative."
+            # If no deck exists, make a new one
+            if st.session_state.deck_id is None:
+                new_deck = requests.get("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+                st.session_state.deck_id = new_deck.json()["deck_id"]
+
+            # Draw cards from the API
+            draw = requests.get(
+                f"https://deckofcardsapi.com/api/deck/{st.session_state.deck_id}/draw/?count={num_cards}"
+            ).json()
+
+            # If deck is empty, reset it
+            if not draw["success"]:
+                new_deck = requests.get("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+                st.session_state.deck_id = new_deck.json()["deck_id"]
+            else:
+                st.session_state.current_cards = draw["cards"]
+                st.success("Cards Drawn!")
+        except:
+            st.error("Something went wrong while drawing cards.")
+
+    # Clear cards
+    if st.button("Clear Cards"):
+        st.session_state.current_cards = []
+        st.success("Cards cleared!")
+
+    # Display the cards
+    if st.session_state.current_cards:
+        st.subheader("Your Cards")
+        for c in st.session_state.current_cards:
+            st.image(c["image"], width=80)
+            st.write(c["value"], " of ", c["suit"])
+
+    st.write("---")
+
+    # Clear chat
+    if st.button("Clear Chat History"):
+        st.session_state.chat_history = []
+        st.success("Chat cleared!")
+
+# ---------------------------------
+# MAIN CHAT AREA
+# ---------------------------------
+
+st.header("Chat")
+
+# Show old messages
+for msg in st.session_state.chat_history:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
+
+# User input box
+user_msg = st.text_area("Type something:")
+
+# Send button
+if st.button("Send Message"):
+    if not api_key:
+        st.error("Enter your API key first.")
+    elif user_msg.strip() == "":
+        st.warning("Please type something.")
+    else:
+        # Add user's message to the chat
+        st.session_state.chat_history.append({
+            "role": "user",
+            "content": user_msg
+        })
+
+        # Build prompt
+        prompt = "You are a friendly card game assistant.\n"
+
+        # Add card info
+        if st.session_state.current_cards:
+            card_text = ", ".join(
+                c["value"] + " of " + c["suit"]
+                for c in st.session_state.current_cards
             )
-            
-            # Add card context if available
-            if st.session_state.current_cards:
-                cards_desc = ", ".join([
-                    f"{card['value']} of {card['suit']}" 
-                    for card in st.session_state.current_cards
-                ])
-                context_parts.append(
-                    f"\nCurrent cards in the user's hand: {cards_desc}. "
-                    "Consider these cards when providing advice if relevant to the question."
-                )
-            
-            # Add conversation history (last 5 messages for context)
-            recent_history = st.session_state.chat_history[-6:-1]  # Exclude the message we just added
-            if recent_history:
-                context_parts.append("\nRecent conversation:")
-                for msg in recent_history:
-                    role_label = "User" if msg['role'] == 'user' else "Assistant"
-                    context_parts.append(f"{role_label}: {msg['content']}")
-            
-            # Add current user question
-            context_parts.append(f"\nUser's current question: {user_input}")
-            
-            full_prompt = "\n".join(context_parts)
-            
-            # Generate response
-            with st.spinner("🤔 Thinking..."):
-                model = genai.GenerativeModel('gemini-pro')
-                response = model.generate_content(full_prompt)
-                
-                # Add assistant response to history
-                st.session_state.chat_history.append({
-                    'role': 'assistant',
-                    'content': response.text
-                })
-                
-                # Success message
-                st.success("✅ Response generated!")
-                st.rerun()
-                
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
-            st.info("💡 Make sure your API key is valid and you have internet connection.")
+            prompt += "User currently has these cards: " + card_text + "\n"
 
-# Quick question buttons
-st.divider()
-st.subheader("⚡ Quick Questions")
+        # Add recent chat history (just the last few messages)
+        prompt += "\nConversation so far:\n"
+        for m in st.session_state.chat_history[-6:-1]:
+            if m["role"] == "user":
+                prompt += "User: " + m["content"] + "\n"
+            else:
+                prompt += "Assistant: " + m["content"] + "\n"
 
-col1, col2, col3 = st.columns(3)
+        # Add the new message
+        prompt += "User's question: " + user_msg
 
-quick_questions = [
-    "🂠 Explain poker hand rankings",
-    "🃏 Best blackjack strategy?",
-    "🎲 How do I count cards?",
-    "📊 Card probability basics",
-    "🎯 Tips for beginners",
-    "🎴 Rules for popular games"
+        # Ask Gemini
+        try:
+            model = genai.GenerativeModel("gemini-pro")
+            reply = model.generate_content(prompt).text
+
+            # Add assistant response
+            st.session_state.chat_history.append({
+                "role": "assistant",
+                "content": reply
+            })
+
+            st.rerun()  # refresh screen so message appears cleanly
+        except:
+            st.error("Something went wrong with Gemini.")
+
+# ------------------------------
+# QUICK QUESTION BUTTONS
+# ------------------------------
+st.write("---")
+st.header("Quick Questions")
+
+quick_list = [
+    "Explain poker hand rankings",
+    "Best blackjack strategy?",
+    "How do I count cards?",
+    "Card probability basics",
+    "Tips for beginners",
+    "Rules for popular games"
 ]
 
-for i, question in enumerate(quick_questions):
-    col = [col1, col2, col3][i % 3]
-    with col:
-        if st.button(question, use_container_width=True, key=f"quick_{i}"):
-            # Set the question in the text area by adding it to chat directly
-            if api_key:
-                st.session_state.chat_history.append({
-                    'role': 'user',
-                    'content': question.split(" ", 1)[1]  # Remove emoji
-                })
-                
-                # Generate response for quick question
-                try:
-                    context = f"You are a card game expert. Answer this question concisely: {question.split(' ', 1)[1]}"
-                    
-                    if st.session_state.current_cards:
-                        cards_desc = ", ".join([
-                            f"{card['value']} of {card['suit']}" 
-                            for card in st.session_state.current_cards
-                        ])
-                        context += f"\nUser's current cards: {cards_desc}"
-                    
-                    model = genai.GenerativeModel('gemini-pro')
-                    response = model.generate_content(context)
-                    
-                    st.session_state.chat_history.append({
-                        'role': 'assistant',
-                        'content': response.text
-                    })
-                    
-                    st.rerun()
-                except:
-                    st.error("Error processing quick question")
-            else:
-                st.warning("Please enter your API key first!")
+cols = st.columns(3)
 
-# Footer
-st.divider()
-st.caption("🤖 Chatbot powered by Google Gemini AI | Card data from Deck of Cards API")
+for i in range(len(quick_list)):
+    if cols[i % 3].button(quick_list[i]):
+        # Add question to chat
+        st.session_state.chat_history.append({
+            "role": "user",
+            "content": quick_list[i]
+        })
+
+        # Basic prompt for quick answer
+        q_prompt = "You are a card game expert. Answer this: " + quick_list[i]
+
+        if st.session_state.current_cards:
+            card_text = ", ".join(
+                c["value"] + " of " + c["suit"]
+                for c in st.session_state.current_cards
+            )
+            q_prompt += "\nUser's cards: " + card_text
+
+        # Ask Gemini
+        try:
+            model = genai.GenerativeModel("gemini-pro")
+            ans = model.generate_content(q_prompt).text
+
+            st.session_state.chat_history.append({
+                "role": "assistant",
+                "content": ans
+            })
+            st.rerun()
+        except:
+            st.error("Error answering quick question.")
